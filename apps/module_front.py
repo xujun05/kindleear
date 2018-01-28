@@ -37,11 +37,7 @@ log.setLevel(logging.INFO if IsRunInLocal else logging.WARN)
 
 import web
 import jinja2
-#from google.appengine.api import mail
-#from google.appengine.api import taskqueue
-from google.appengine.api import memcache
 
-from lib.memcachestore import MemcacheStore
 from books import BookClasses
 
 from apps.View import *
@@ -54,8 +50,6 @@ from apps.utils import fix_filesizeformat
 #sys.setdefaultencoding('utf-8')
 
 for book in BookClasses():  #添加内置书籍
-    if memcache.get(book.title): #使用memcache加速
-        continue
     b = Book.all().filter("title = ", book.title).get()
     if not b:
         b = Book(title=book.title, description=book.description, builtin=True, 

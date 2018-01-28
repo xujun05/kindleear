@@ -14,6 +14,7 @@ from config import *
 import datetime
 import gettext
 import re
+import jinja2
 
 #当异常出现时，使用此函数返回真实引发异常的文件名，函数名和行号
 def get_exc_location():
@@ -29,15 +30,18 @@ def get_exc_location():
     exc_info = None
     return fileName, funcName, lineNo
 
-#字符串转整数，出错则返回0
+
+# 字符串转整数，出错则返回0
 def str_to_int(txt):
     try:
         return int(txt.strip())
     except:
         return 0
 
+
 def local_time(fmt="%Y-%m-%d %H:%M", tz=TIMEZONE):
     return (datetime.datetime.utcnow()+datetime.timedelta(hours=tz)).strftime(fmt)
+
 
 def hide_email(email):
     """ 隐藏真实email地址，使用星号代替部分字符 """
@@ -48,12 +52,14 @@ def hide_email(email):
         return email[0][0] + '**@' + email[-1]
     to = email[0][0:2] + ''.join(['*' for s in email[0][2:-1]]) + email[0][-1]
     return to + '@' + email[-1]
-    
+
+
 def set_lang(lang):
     """ 设置网页显示语言 """
     tr = gettext.translation('lang', 'i18n', languages=[lang])
     tr.install(True)
-    main.jjenv.install_gettext_translations(tr)
+    jinja2.jjenv.install_gettext_translations(tr)
+
 
 def fix_filesizeformat(value, binary=False):
     " bugfix for do_filesizeformat of jinja2 "
@@ -74,8 +80,8 @@ def fix_filesizeformat(value, binary=False):
         return '%.1f %s' % ((base * bytes / unit), prefix)
 
         
-#将etag应用于具体页面的装饰器
-#此装饰器不能减轻服务器压力，但是可以减小客户端的再次加载页面时间
+# 将etag应用于具体页面的装饰器
+# 此装饰器不能减轻服务器压力，但是可以减小客户端的再次加载页面时间
 def etagged():
     def decorator(func):
         @wraps(func)
@@ -85,7 +91,7 @@ def etagged():
                 etag = '"%s"' % md5(rsp_data.encode('utf-8', 'ignore')).hexdigest()
             else:
                 etag = '"%s"' % md5(rsp_data).hexdigest()
-            #格式参见：<http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26>
+            # 格式参见：<http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26>
             n = set([x.strip().lstrip('W/') for x in web.ctx.env.get('HTTP_IF_NONE_MATCH', '').split(',')])
             if etag in n:
                 raise web.notmodified()
@@ -95,10 +101,11 @@ def etagged():
                 return rsp_data
         return wrapper
     return decorator
-    
-#创建OEB的两级目录，主要代码由rexdf贡献
-#sections为有序字典，关键词为段名，元素为元组列表(title,brief,humbnail,content)
-#toc_thumbnails为字典，关键词为图片原始URL，元素为其在oeb内的href。
+
+
+# 创建OEB的两级目录，主要代码由rexdf贡献
+# sections为有序字典，关键词为段名，元素为元组列表(title,brief,humbnail,content)
+# toc_thumbnails为字典，关键词为图片原始URL，元素为其在oeb内的href。
 def InsertToc(oeb, sections, toc_thumbnails, insertHtmlToc=True, insertThumbnail=True):
     css_pat = r'<style type="text/css">(.*?)</style>'
     css_ex = re.compile(css_pat, re.M | re.S)
@@ -144,17 +151,17 @@ def InsertToc(oeb, sections, toc_thumbnails, insertHtmlToc=True, insertThumbnail
         
         html_content.insert(0, '<html><head><title>%s</title><style type="text/css">%s</style></head><body>' % (sec, ''.join(css)))
         
-        #add section.html to maninfest and spine
-        #We'd better not use id as variable. It's a python builtin function.
+        # add section.html to maninfest and spine
+        # We'd better not use id as variable. It's a python builtin function.
         id_, href = oeb.manifest.generate(id='feed', href='feed%d.html' % num_sections)
         item = oeb.manifest.add(id_, href, 'application/xhtml+xml', data=''.join(html_content))
         oeb.spine.add(item, True)
         
-        #在目录分类中添加每个目录下的文章篇数
+        # 在目录分类中添加每个目录下的文章篇数
         sec_with_num = '%s (%d)' % (sec, len(sections[sec]))
         ncx_toc.append(('section', sec_with_num, href, '', sec_toc_thumbnail)) #Sections name && href && no brief
         
-        #generate the secondary toc
+        # generate the secondary toc
         if insertHtmlToc:
             html_toc_ = ['<html><head><title>toc</title></head><body><h2>%s</h2><ol>' % (sec_with_num)]
         for title, anchor, brief, thumbnail in secondary_toc_list:
@@ -169,11 +176,11 @@ def InsertToc(oeb, sections, toc_thumbnails, insertHtmlToc=True, insertThumbnail
         num_sections += 1
 
     if insertHtmlToc:
-        #Generate HTML TOC for Calibre mostly
-        ##html_toc_1 top level toc
+        # Generate HTML TOC for Calibre mostly
+        # #html_toc_1 top level toc
         html_toc_1 = [u'<html><head><title>Table Of Contents</title></head><body><h2>%s</h2><ul>'%(TABLE_OF_CONTENTS)]
         html_toc_1_ = []
-        #We need index but not reversed()
+        # We need index but not reversed()
         for a in xrange(len(html_toc_2)-1,-1,-1):
             #Generate Secondary HTML TOC
             id_, href = oeb.manifest.generate(id='section', href='toc_%d.html' % (a))
@@ -191,7 +198,7 @@ def InsertToc(oeb, sections, toc_thumbnails, insertHtmlToc=True, insertThumbnail
         oeb.guide.add('toc', 'Table of Contents', href)
         oeb.spine.insert(0, item, True)
 
-    #Generate NCX TOC for Kindle
+    # Generate NCX TOC for Kindle
     po = 1 
     toc = oeb.toc.add(unicode(oeb.metadata.title[0]), oeb.spine[0].href, id='periodical', klass='periodical', play_order=po)
     po += 1
@@ -208,18 +215,22 @@ def InsertToc(oeb, sections, toc_thumbnails, insertHtmlToc=True, insertThumbnail
             sectoc.add(unicode(ncx[1]), ncx[2], description=ncx[3] if ncx[3] else None, klass='article', play_order=po, 
                 id='article-%d'%po, toc_thumbnail=toc_thumbnail)
         po += 1
-                    
-#-----------以下几个函数为安全相关的
+
+
+# -----------以下几个函数为安全相关的
 def new_secret_key(length=8):
     import random
     allchars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZY0123456789'
     return ''.join([random.choice(allchars) for i in range(length)])
-    
+
+
 def ke_encrypt(s, key):
     return auth_code(s, key, 'ENCODE')
-    
+
+
 def ke_decrypt(s, key):
     return auth_code(s, key, 'DECODE')
+
 
 def auth_code(string, key, operation='DECODE'):
     import hashlib,base64
@@ -264,4 +275,4 @@ def auth_code(string, key, operation='DECODE'):
             return ''
     else:
         return base64.urlsafe_b64encode(result)
-        
+

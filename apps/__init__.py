@@ -9,11 +9,9 @@
 # rexdf <https://github.com/rexdf>
 
 import __builtin__, sys
-from google.appengine.ext import vendor
 
 __Version__ = '1.25.1'
 
 __builtin__.__dict__['__Version__'] = __Version__
 
 sys.path.insert(0, 'lib')
-vendor.add('lib')

@@ -7,9 +7,6 @@
 #Contributors:
 # rexdf <https://github.com/rexdf>
 from operator import attrgetter
-from google.appengine.ext import db
-from google.appengine.api import memcache
-from google.appengine.api.datastore_errors import NeedIndexError
 from apps.utils import ke_encrypt,ke_decrypt
 
 #--------------db models----------------

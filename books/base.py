@@ -1527,9 +1527,21 @@ def string_of_tag(tag, normalize_whitespace=False):
 
 # 将抓取的网页发到自己邮箱进行调试
 def debug_mail(content, name='page.html'):
-    from google.appengine.api import mail
-    mail.send_mail(SRC_EMAIL, SRC_EMAIL, "KindleEar Debug", "KindlerEar",
-                   attachments=[(name, content), ])
+    logger.info("TODO")
+    pass
+    # from_addr="xujun.tsinghua@gmail.com"
+    # password=""
+    # to_addr="somnus@kindle.cn"
+    # import smtplib
+    # host = "smtp.gmail.com"
+    # port = 25
+    # server = smtplib.SMTP(host, port)  # SMTP协议默认端口是25
+    # server.set_debuglevel(1)
+    # server.login(from_addr, password)
+    # server.sendmail(from_addr, [to_addr], msg.as_string())
+    # from google.appengine.api import mail
+    # mail.send_mail(SRC_EMAIL, SRC_EMAIL, "KindleEar Debug", "KindlerEar",
+    #                attachments=[(name, content), ])
 
 
 # 抓取网页，发送到自己邮箱，用于调试目的

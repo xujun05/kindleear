@@ -9,7 +9,6 @@ import datetime
 from apps.BaseHandler import BaseHandler
 from apps.dbModels import *
 from apps.utils import etagged
-from google.appengine.api.datastore_errors import NeedIndexError
 import web
 try:
     import json

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-#KindleEar: A GAE web application to aggregate rss and send it to your kindle.
-#Visit https://github.com/cdhigh/KindleEar for the latest version
-#Author:
+# KindleEar: A GAE web application to aggregate rss and send it to your kindle.
+# Visit https://github.com/cdhigh/KindleEar for the latest version
+# Author:
 # cdhigh <https://github.com/cdhigh>
-#Contributors:
+# Contributors:
 # rexdf <https://github.com/rexdf>
 
 import os, datetime, logging, __builtin__, hashlib, time, base64, urlparse, imghdr
@@ -15,11 +15,6 @@ from bs4 import BeautifulSoup
 from utils import *
 from config import *
 from apps.dbModels import *
-from google.appengine.api import mail
-from google.appengine.api.mail_errors import (InvalidSenderError,
-                                           InvalidAttachmentTypeError)
-from google.appengine.runtime.apiproxy_errors import (OverQuotaError,
-                                                DeadlineExceededError)
 
 #import main
 
@@ -79,7 +74,7 @@ class BaseHandler:
     @classmethod
     def SendToKindle(self, name, to, title, booktype, attachment, tz=TIMEZONE, filewithtime=True):
         if PINYIN_FILENAME: # 将中文文件名转换为拼音
-            from calibre.ebooks.unihandecode.unidecoder import Unidecoder
+            from lib.calibre.ebooks.unihandecode.unidecoder import Unidecoder
             decoder = Unidecoder()
             basename = decoder.decode(title)
         else:
@@ -88,9 +83,9 @@ class BaseHandler:
         lctime = local_time('%Y-%m-%d_%H-%M',tz)
         if booktype:
             if filewithtime:
-                filename = "%s(%s).%s"%(basename,lctime,booktype)
+                filename = "%s(%s).%s" % (basename,lctime,booktype)
             else:
-                filename = "%s.%s"%(basename,booktype)
+                filename = "%s.%s" % (basename,booktype)
         else:
             filename = basename
             

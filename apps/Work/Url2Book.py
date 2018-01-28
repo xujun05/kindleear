@@ -18,8 +18,9 @@ from books.base import BaseUrlBook
 from config import *
 
 class Url2Book(BaseHandler):
-    #抓取指定链接，转换成附件推送
+    # 抓取指定链接，转换成附件推送
     __url__ = "/url2book"
+
     def GET(self):
         username = web.input().get("u")
         urls = web.input().get("urls")
