@@ -16,7 +16,7 @@ from utils import *
 from config import *
 from apps.dbModels import *
 
-#import main
+# import main
 
 #URL请求处理类的基类，实现一些共同的工具函数
 class BaseHandler:
@@ -31,7 +31,7 @@ class BaseHandler:
     
     @classmethod
     def login_required(self, username=None):
-        if (main.session.get('login') != 1) or (username and username != main.session.get('username')):
+        if (session.get('login') != 1) or (username and username != main.session.get('username')):
             raise web.seeother(r'/login')
     
     @classmethod
